@@ -1,0 +1,23 @@
+# VS Code settings
+.vscode/
+
+# GitHub folders (if you don't want custom instructions)
+.github/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Log files
+*.log
+
+# Node modules (if you add them later)
+node_modules/
+
+# Environment files
+.env
+.env.local
