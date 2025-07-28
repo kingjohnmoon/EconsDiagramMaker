@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economic Diagram Generator</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Loads Chart.js, might consider downloading for offline use -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Title/ Header -->
+        <header>
+            <h1>Economic Diagram Generator</h1>
+            <p>Generate Economic Diagrams from Formulas</p>
+        </header>
+
+        <main>
+            <div class="input-section">
+                <h2>Supply & Demand Diagram</h2>
+                
+                <div class="formula-inputs">
+
+                    <!-- Supply Formula Input -->
+                    <div class="input-group">
+                        <label for="supplyFormula">Supply Formula:</label>
+                        <input type="text" id="supplyFormula" placeholder="e.g., 2*Q + 10" value="2*Q + 10">
+                        <small>Enter as: slope*Q + intercept (e.g., 2*Q + 10)</small>
+                    </div>
+
+                    <!-- Demand Formula Input -->
+                    <div class="input-group">
+                        <label for="demandFormula">Demand Formula:</label>
+                        <input type="text" id="demandFormula" placeholder="e.g., -1*Q + 50" value="-1*Q + 50">
+                        <small>Enter as: slope*Q + intercept (e.g., -1*Q + 50)</small>
+                    </div>
+
+                    <!-- Q-axis Range Input -->
+                    <div class="input-group">
+                        <label for="xRange">Q-axis Range (max):</label>
+                        <input type="number" id="xRange" value="50">
+                    </div>
+                </div>
+
+                <!-- Button to generate the diagram -->
+                <button id="generateBtn" class="generate-btn">Generate Diagram</button>
+            </div>
+
+            <div class="output-section">
+                <h2>Supply & Demand Chart</h2>
+                <div class="chart-container">
+
+                    <!-- Chart.js canvas element -->
+                    <canvas id="economicChart"></canvas>
+                    
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <!--  Tagline? Your choice -->
+            <p>Visualize economic concepts with ease!</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
