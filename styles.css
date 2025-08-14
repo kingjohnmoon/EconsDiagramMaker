@@ -208,3 +208,34 @@ footer {
 .error-message.show {
     display: block;
 }
+
+/* Equilibrium Info Display */
+.equilibrium-info {
+    background: #fef3c7;
+    border: 2px solid #f59e0b;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    display: none;
+}
+
+.equilibrium-info.show {
+    display: block;
+}
+
+.equilibrium-info h3 {
+    color: #92400e;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.equilibrium-info p {
+    color: #78350f;
+    margin: 5px 0;
+    font-size: 0.95rem;
+}
+
+.equilibrium-info em {
+    color: #a16207;
+    font-style: italic;
+}

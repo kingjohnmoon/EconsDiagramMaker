@@ -61,15 +61,18 @@ class EconomicDiagramGenerator {
             const supplyParsed = this.parseFormula(supplyFormula);
             const demandParsed = this.parseFormula(demandFormula);
 
+            // Calculate equilibrium point
+            const equilibrium = this.calculateEquilibrium(supplyParsed, demandParsed);
+
             const supplyPoints = this.calculatePoints(supplyParsed.coefficient, supplyParsed.constant, maxQ);
             const demandPoints = this.calculatePoints(demandParsed.coefficient, demandParsed.constant, maxQ);
 
-            // Create chart datasets with color scheme matching design
+            // Create chart datasets - equilibrium LAST so it renders on top
             const datasets = [
                 {
                     label: 'Supply',
                     data: supplyPoints,
-                    borderColor: '#ea580c', // Orange to match input section
+                    borderColor: '#ea580c',
                     backgroundColor: 'rgba(234, 88, 12, 0.1)',
                     borderWidth: 3,
                     fill: false,
@@ -81,7 +84,7 @@ class EconomicDiagramGenerator {
                 {
                     label: 'Demand',
                     data: demandPoints,
-                    borderColor: '#3b82f6', // Blue to match output section
+                    borderColor: '#3b82f6',
                     backgroundColor: 'rgba(59, 130, 246, 0.1)',
                     borderWidth: 3,
                     fill: false,
@@ -89,15 +92,60 @@ class EconomicDiagramGenerator {
                     pointRadius: 0,
                     pointHoverRadius: 0,
                     pointBackgroundColor: 'transparent'
+                },
+                {
+                    label: 'Equilibrium',
+                    data: [equilibrium],
+                    borderColor: '#dc2626',
+                    backgroundColor: '#dc2626',
+                    borderWidth: 0, // No border for cleaner look
+                    pointRadius: 4, // Slightly larger for better visibility
+                    pointHoverRadius: 6,
+                    showLine: false,
+                    pointStyle: 'circle',
+                    pointBorderWidth: 2,
+                    pointBorderColor: '#ffffff', // White border for contrast
+                    pointBackgroundColor: '#dc2626'
                 }
             ];
 
             this.renderChart(datasets, maxQ);
+            this.displayEquilibriumInfo(equilibrium);
 
         } catch (error) {
             this.showError('Please check your formulas. Use format: slope*Q + intercept (e.g., 2*Q + 10)');
             console.error('Formula parsing error:', error);
         }
+    }
+
+    calculateEquilibrium(supplyParsed, demandParsed) {
+        // Supply: P = supply_slope * Q + supply_intercept
+        // Demand: P = demand_slope * Q + demand_intercept
+        // At equilibrium: supply_slope * Q + supply_intercept = demand_slope * Q + demand_intercept
+        // Solve for Q: Q = (demand_intercept - supply_intercept) / (supply_slope - demand_slope)
+        
+        const equilibriumQ = (demandParsed.constant - supplyParsed.constant) / 
+                            (supplyParsed.coefficient - demandParsed.coefficient);
+        
+        const equilibriumP = supplyParsed.coefficient * equilibriumQ + supplyParsed.constant;
+        
+        return {
+            x: parseFloat(equilibriumQ.toFixed(2)),
+            y: parseFloat(equilibriumP.toFixed(2))
+        };
+    }
+
+    displayEquilibriumInfo(equilibrium) {
+        const equilibriumInfo = document.getElementById('equilibrium-info');
+        
+        equilibriumInfo.innerHTML = `
+            <h3>Market Equilibrium</h3>
+            <p><strong>Quantity (Q):</strong> ${equilibrium.x} units</p>
+            <p><strong>Price (P):</strong> $${equilibrium.y}</p>
+            <p><em>This is where supply meets demand</em></p>
+        `;
+        
+        equilibriumInfo.classList.add('show');
     }
 
     parseFormula(formula) {
@@ -166,16 +214,38 @@ class EconomicDiagramGenerator {
                         display: true,
                         text: 'Supply & Demand Diagram',
                         font: { size: 18, weight: 'bold' },
-                        color: '#1f2937' // Dark gray for good contrast on white
+                        color: '#1f2937'
                     },
                     legend: {
                         display: true,
                         position: 'top',
                         labels: {
-                            color: '#374151', // Medium gray for legend text
+                            color: '#374151',
                             font: { size: 14, weight: '500' },
                             usePointStyle: true,
                             pointStyle: 'line'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            // Custom tooltip for equilibrium point
+                            title: function(context) {
+                                const point = context[0];
+                                if (point.dataset.label === 'Equilibrium') {
+                                    return 'Market Equilibrium';
+                                }
+                                return point.dataset.label;
+                            },
+                            label: function(context) {
+                                if (context.dataset.label === 'Equilibrium') {
+                                    return [
+                                        `Quantity: ${context.parsed.x} units`,
+                                        `Price: $${context.parsed.y}`,
+                                        'Where supply meets demand'
+                                    ];
+                                }
+                                return `${context.dataset.label}: Q=${context.parsed.x}, P=$${context.parsed.y}`;
+                            }
                         }
                     }
                 },
@@ -186,17 +256,17 @@ class EconomicDiagramGenerator {
                         title: {
                             display: true,
                             text: 'Quantity (Q)',
-                            color: '#374151', // Medium gray for axis labels
+                            color: '#374151',
                             font: { size: 14, weight: '600' }
                         },
                         min: 0,
                         max: maxQ,
                         grid: { 
                             display: true,
-                            color: '#e5e7eb' // Light gray grid lines
+                            color: '#e5e7eb'
                         },
                         ticks: {
-                            color: '#6b7280', // Gray for tick numbers
+                            color: '#6b7280',
                             font: { size: 12 }
                         }
                     },
@@ -204,23 +274,24 @@ class EconomicDiagramGenerator {
                         title: {
                             display: true,
                             text: 'Price (P)',
-                            color: '#374151' // Medium gray for axis labels
+                            color: '#374151',
+                            font: { size: 14, weight: '600' }
                         },
                         min: 0,
                         max: maxP,
                         grid: { 
                             display: true,
-                            color: '#e5e7eb' // Light gray grid lines
+                            color: '#e5e7eb'
                         },
                         ticks: {
-                            color: '#6b7280', // Gray for tick numbers
+                            color: '#6b7280',
                             font: { size: 12 }
                         }
                     }
                 },
                 interaction: {
                     intersect: false,
-                    mode: 'index'
+                    mode: 'index' // Changed from 'point' to 'index' for line hovering
                 }
             }
         });
